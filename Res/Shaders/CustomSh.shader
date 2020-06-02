@@ -2,33 +2,37 @@
 {
     Properties{
         //[Header("基础贴图")]
-        _MainTex("Main Tex", 2D) = "white"{}
+        [NoScaleOffcut]_MainTex("Main Tex|基础贴图", 2D) = "white"{}
         //[Header("基础颜色")]
-        _MainColor("Main Color", Color) = (1, 1, 1, 1)
+        _MainColor("Main Color|基础颜色", Color) = (1, 1, 1, 1)
         //[Header("高光的颜色")]
-        _Specular("Specular", Color) = (1, 1, 1, 1)
+        _Specular("Specular|高光的颜色", Color) = (1, 1, 1, 1)
         //[Header("高光区域控制参数")]
-        _Gloss("Gloss", Range(0.0, 1000.0)) = 20
+        _Gloss("Gloss|高光区域控制参数", Range(0.0, 1000.0)) = 600
         //[Header("阴影（暗面）颜色")]
-        _ShadowColor("Shadow Color", Color) = (0.7, 0.7, 0.8, 1)
+        _ShadowColor("Shadow Color|阴影（暗面）颜色", Color) = (0.7, 0.7, 0.8, 1)
         //[Header("阴影（暗面）占比区域")]
-        _ShadowArea("Shadow Area", Range(0.0, 1.0)) = 0.5
+        _ShadowArea("Shadow Area|阴影（暗面）占比区域", Range(0.0, 1.0)) = 0.5
         
+        [Space(20)]
         //[Header("轮廓线颜色")]
-        _OutlineColor("Outline Color", Color) = (0, 0, 0, 1)
+        _OutlineColor("Outline Color|轮廓线颜色", Color) = (0, 0, 0, 1)
         //[Header("轮廓线宽度")]
-        _OutlineWidth("Outline Width", Range(0.0, 1.0)) = 0.003
-        //[Header("Fresnel 系数")]
-        _FresnelParameter("Fresnel Parameter", Range(0.0, 1.0)) = 0.5
-        //[Header("Fresnel Effect 颜色控制参数")]
-        _FrensnelEffectColor("Fresnel Effect Color", Color) = (1, 1, 1, 1)
+        _OutlineWidth("Outline Width|轮廓线宽度", Range(0.0, 1.0)) = 0.003
 
+        [Space(20)]
+        //[Header("Fresnel 系数")]
+        _FresnelParameter("Fresnel Parameter|Fresnel 系数", Range(0.0, 1.0)) = 0.5
+        //[Header("Fresnel Effect 颜色控制参数")]
+        _FrensnelEffectColor("Fresnel Effect Color|Fresnel Effect 颜色控制参数", Color) = (1, 1, 1, 1)
+        [Enum(Off,0,On,1)]_FresnelEffectToggle("Fresnel Effect Toggle|打开/关闭Fresnel Effect",Float) = 1
     }
 
     SubShader{
         Tags{
             "RenderType" = "Opaque"
         }
+        LOD 200
 
         Pass{
             Cull Front
@@ -87,6 +91,7 @@
 
             fixed _FresnelParameter;
             fixed4 _FrensnelEffectColor;
+            float _FresnelEffectToggle;
 
             float _Gloss;
             fixed4 _Specular;
@@ -129,7 +134,7 @@
                 fixed3 spec = pow(saturate(dot(halfDir, worldNormal)), _Gloss);
 
 
-                col = col * texCol + fresnelResult * _FrensnelEffectColor + spec * _Specular.rgb;
+                col = col * texCol + fresnelResult * _FrensnelEffectColor*_FresnelEffectToggle + spec * _Specular.rgb;
                 return fixed4(col, 1);
             }
             ENDCG
